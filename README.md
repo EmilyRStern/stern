@@ -6,13 +6,13 @@ An editorial design system for civic-data visualization in R — ggplot2 themes,
 
 ```r
 # install.packages("remotes")
-remotes::install_github("EmilyRStern/stern-theme")
+remotes::install_github("EmilyRStern/stern")
 ```
 
 To pin to a specific release:
 
 ```r
-remotes::install_github("EmilyRStern/stern-theme@v0.1.0")
+remotes::install_github("EmilyRStern/stern@v0.1.0")
 ```
 
 ## What's in here
