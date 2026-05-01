@@ -1,0 +1,28 @@
+# R session data
+.Rhistory
+.Rapp.history
+.RData
+.RDataTmp
+.Ruserdata
+.Rproj.user/
+
+# Output from this project
+test-output/
+*.png
+!docs/*.png
+
+# RStudio
+*.Rproj
+
+# Editor
+.DS_Store
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+ehthumbs.db
+
+# Environment
+.Renviron
+.env
