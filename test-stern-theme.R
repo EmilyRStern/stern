@@ -66,19 +66,16 @@ save_test(p1, "01_categorical_horizontal_bars")
 
 # ---- 2. Categorical line chart -------------------------------------------
 
-tea_pref <- expand.grid(
-  month = factor(month.abb[1:8], levels = month.abb),
-  tea = c("Earl Grey", "Chamomile", "Peppermint", "Rooibos"),
-  stringsAsFactors = FALSE
-) |>
-  dplyr::mutate(
-    cups = dplyr::case_when(
-      tea == "Earl Grey"  ~ c(48, 52, 55, 50, 58, 62, 65, 68),
-      tea == "Chamomile"  ~ c(72, 70, 65, 60, 55, 50, 48, 52),
-      tea == "Peppermint" ~ c(35, 38, 42, 48, 55, 62, 68, 75),
-      tea == "Rooibos"    ~ c(28, 30, 35, 40, 42, 45, 48, 50)
-    )
+tea_pref <- tibble::tibble(
+  tea = rep(c("Earl Grey", "Chamomile", "Peppermint", "Rooibos"), each = 8),
+  month = factor(rep(month.abb[1:8], times = 4), levels = month.abb),
+  cups = c(
+    48, 52, 55, 50, 58, 62, 65, 68,   # Earl Grey
+    72, 70, 65, 60, 55, 50, 48, 52,   # Chamomile
+    35, 38, 42, 48, 55, 62, 68, 75,   # Peppermint
+    28, 30, 35, 40, 42, 45, 48, 50    # Rooibos
   )
+)
 
 p2 <- ggplot(tea_pref, aes(x = month, y = cups, color = tea, group = tea)) +
   geom_line(linewidth = 0.7) +
@@ -147,8 +144,7 @@ heatmap_data <- expand.grid(
                levels = c("Mon","Tue","Wed","Thu","Fri","Sat","Sun")),
   bakery = c("Hearth", "Crumb", "Levain", "Stoneground", "Wildflour", "Toast"),
   stringsAsFactors = FALSE
-) |>
-  dplyr::mutate(score = round(runif(nrow(.), min = 30, max = 95)))
+)
 
 set.seed(42)
 heatmap_data$score <- round(runif(nrow(heatmap_data), 30, 95))
@@ -238,20 +234,6 @@ p6 <- ggplot(diverge_data, aes(x = pct_change, y = city, fill = pct_change)) +
 save_test(p6, "06_diverging_bars", width = 8, height = 6)
 
 # ---- 7. Faceted small multiples ------------------------------------------
-
-facet_data <- expand.grid(
-  week = 1:12,
-  garden = c("Tomatoes", "Peppers", "Squash", "Beans"),
-  stringsAsFactors = FALSE
-) |>
-  dplyr::mutate(
-    yield = dplyr::case_when(
-      garden == "Tomatoes" ~ pmax(0, 5 + cumsum(rnorm(48, 1.2, 0.6))[1:12]),
-      garden == "Peppers"  ~ pmax(0, 3 + cumsum(rnorm(48, 0.9, 0.4))[13:24]),
-      garden == "Squash"   ~ pmax(0, 8 + cumsum(rnorm(48, 1.5, 0.8))[25:36]),
-      garden == "Beans"    ~ pmax(0, 4 + cumsum(rnorm(48, 1.0, 0.5))[37:48])
-    )
-  )
 
 set.seed(7)
 facet_data <- expand.grid(
