@@ -1,8 +1,9 @@
 # ============================================================================
 # test-stern-theme.R
 # ----------------------------------------------------------------------------
-# Renders a battery of test charts using stern-theme.R.
-# Each chart saves to ./test-output/ as a PNG so you can inspect them.
+# Renders a battery of test charts using the stern package.
+# Each chart prints to the active graphics device (the RStudio plot pane).
+# Use the back/forward arrows in the plot pane to flip through them.
 #
 # Run from the stern-theme/ directory:
 #   source("test-stern-theme.R")
@@ -19,19 +20,18 @@ suppressPackageStartupMessages({
   library(tidyr)
   library(sf)
   library(scales)
+  library(stern)
 })
 
-source("stern-theme.R")
-stern_setup_fonts(dpi = 150)
+stern_setup_fonts(dpi = 96)
 
-out_dir <- "test-output"
-if (!dir.exists(out_dir)) dir.create(out_dir)
-
+# Each call shows the plot in the active graphics device. The width/height
+# args are kept for API compatibility but are unused -- the plot pane sizes
+# itself. Replace `print(plot)` with `ggsave(...)` here if you ever want
+# files again.
 save_test <- function(plot, name, width = 8, height = 5) {
-  path <- file.path(out_dir, paste0(name, ".png"))
-  ggsave(path, plot, width = width, height = height, dpi = 150,
-         bg = stern_bg_primary)
-  message("  saved: ", path)
+  message("  showing: ", name)
+  print(plot)
 }
 
 message("Rendering Stern theme test charts...")
@@ -155,9 +155,10 @@ heatmap_data$score <- round(runif(nrow(heatmap_data), 30, 95))
 
 p4 <- ggplot(heatmap_data, aes(x = day, y = bakery, fill = score)) +
   geom_tile(color = stern_bg_primary, linewidth = 0.5) +
-  geom_text(aes(label = score), family = "stern_sans", size = 3,
-            color = stern_text_body) +
+  geom_text(aes(label = score, color = stern_text_on_seq(score)),
+            family = "stern_sans", size = 3) +
   scale_fill_stern_seq(name = "Freshness") +
+  scale_color_identity() +
   coord_equal() +
   labs(
     title    = "Cookie freshness scores by bakery and day",
@@ -354,6 +355,7 @@ save_test(p9, "09_mustard_highlight")
 
 # ---- Done ----------------------------------------------------------------
 
-message("\nAll done. Open the test-output/ folder to review.")
+message("\nAll done. Use the back/forward arrows in the RStudio plot pane ",
+        "to flip through all 9 charts.")
 message("If anything looks off (font rendering, color too dark/light, ",
         "spacing weird), let me know which chart and we'll tune it.")

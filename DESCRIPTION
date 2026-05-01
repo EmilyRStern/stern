@@ -1,0 +1,38 @@
+Package: stern
+Type: Package
+Title: Editorial Design System and Reporting Helpers for Civic-Data Projects
+Version: 0.1.0
+Authors@R:
+    person("Emily", "Stern", , "stern.emily06@gmail.com",
+           role = c("aut", "cre"))
+Description: A coordinated visual language and a growing set of
+    reporting helpers for public-interest data work. Includes 'ggplot2'
+    themes, color scales, 'Shiny' components built on 'bslib', and a
+    'Highcharter' theme. Future modules will cover project intros and
+    summary panels.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Language: en-US
+URL: https://github.com/EmilyRStern/stern-theme
+BugReports: https://github.com/EmilyRStern/stern-theme/issues
+Depends:
+    R (>= 4.1)
+Imports:
+    ggplot2,
+    scales
+Suggests:
+    bslib (>= 0.6.0),
+    DT,
+    highcharter,
+    htmltools,
+    knitr,
+    rmarkdown,
+    shiny,
+    showtext,
+    sysfonts,
+    testthat (>= 3.0.0),
+    vdiffr
+Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0

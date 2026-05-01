@@ -6,10 +6,22 @@
 .Ruserdata
 .Rproj.user/
 
+# Package build artifacts
+*.tar.gz
+*.Rcheck/
+src/*.o
+src/*.so
+src/*.dll
+
+# pkgdown site (built locally; deployed via CI)
+docs/
+
 # Output from this project
 test-output/
 *.png
 !docs/*.png
+!man/figures/*.png
+!README_files/*.png
 
 # RStudio
 *.Rproj
@@ -26,3 +38,5 @@ ehthumbs.db
 # Environment
 .Renviron
 .env
+.positai
+
