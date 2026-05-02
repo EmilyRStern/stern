@@ -1,7 +1,7 @@
 Package: stern
 Type: Package
 Title: Editorial Design System and Reporting Helpers for Civic-Data Projects
-Version: 0.1.0
+Version: 0.1.2
 Authors@R:
     person("Emily", "Stern", , "stern.emily06@gmail.com",
            role = c("aut", "cre"))
@@ -22,15 +22,19 @@ Imports:
     scales
 Suggests:
     bslib (>= 0.6.0),
+    dplyr,
     DT,
     highcharter,
     htmltools,
     knitr,
     rmarkdown,
+    sf,
     shiny,
     showtext,
     sysfonts,
     testthat (>= 3.0.0),
+    tibble,
+    tidyr,
     vdiffr
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3

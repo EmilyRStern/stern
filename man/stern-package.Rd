@@ -49,8 +49,8 @@ tile labels don't disappear at the dark end of the scale.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/estern/stern-theme}
-  \item Report bugs at \url{https://github.com/estern/stern-theme/issues}
+  \item \url{https://github.com/EmilyRStern/stern-theme}
+  \item Report bugs at \url{https://github.com/EmilyRStern/stern-theme/issues}
 }
 
 }

@@ -1,12 +1,12 @@
 # ============================================================================
-# test-stern-theme.R
+# stern smoke test
 # ----------------------------------------------------------------------------
-# Renders a battery of test charts using the stern package.
-# Each chart prints to the active graphics device (the RStudio plot pane).
-# Use the back/forward arrows in the plot pane to flip through them.
+# Renders a battery of test charts using the stern package. Each chart prints
+# to the active graphics device (the RStudio plot pane). Use the back/forward
+# arrows in the plot pane to flip through them.
 #
-# Run from the stern-theme/ directory:
-#   source("test-stern-theme.R")
+# This script is invoked by stern::stern_test(). You can also source it
+# directly: source(system.file("examples", "test-stern-theme.R", package = "stern"))
 #
 # Sample data is intentionally silly (snack consumption, tea preferences,
 # library checkouts, etc.) so the theme is what gets evaluated, not the topic.
@@ -20,15 +20,11 @@ suppressPackageStartupMessages({
   library(tidyr)
   library(sf)
   library(scales)
-  library(stern)
 })
 
-stern_setup_fonts(dpi = 96)
+stern::stern_setup_fonts(dpi = 96)
 
-# Each call shows the plot in the active graphics device. The width/height
-# args are kept for API compatibility but are unused -- the plot pane sizes
-# itself. Replace `print(plot)` with `ggsave(...)` here if you ever want
-# files again.
+# Each call shows the plot in the active graphics device.
 save_test <- function(plot, name, width = 8, height = 5) {
   message("  showing: ", name)
   print(plot)
@@ -36,7 +32,7 @@ save_test <- function(plot, name, width = 8, height = 5) {
 
 message("Rendering Stern theme test charts...")
 
-# ---- 1. Categorical bar — horizontal -------------------------------------
+# ---- 1. Categorical bar - horizontal -------------------------------------
 
 snack_data <- tibble::tibble(
   snack = c("Pretzels", "Trail mix", "Cheese cubes",
@@ -49,8 +45,8 @@ p1 <- ggplot(snack_data, aes(x = count, y = reorder(snack, count),
   geom_col(width = 0.7) +
   geom_text(aes(label = count), hjust = -0.4,
             family = "stern_sans", size = 3.2,
-            color = stern_text_body) +
-  scale_fill_stern_cat() +
+            color = stern::stern_text_body) +
+  stern::scale_fill_stern_cat() +
   scale_x_continuous(expand = expansion(mult = c(0, 0.12))) +
   labs(
     title    = "Office snacks consumed this month",
@@ -59,7 +55,7 @@ p1 <- ggplot(snack_data, aes(x = count, y = reorder(snack, count),
     y        = NULL,
     caption  = "Source: A clipboard on the fridge."
   ) +
-  theme_stern_vertical() +
+  stern::theme_stern_vertical() +
   theme(legend.position = "none")
 
 save_test(p1, "01_categorical_horizontal_bars")
@@ -80,7 +76,7 @@ tea_pref <- tibble::tibble(
 p2 <- ggplot(tea_pref, aes(x = month, y = cups, color = tea, group = tea)) +
   geom_line(linewidth = 0.7) +
   geom_point(size = 1.6) +
-  scale_color_stern_cat() +
+  stern::scale_color_stern_cat() +
   labs(
     title    = "Tea consumption by variety",
     subtitle = "Cups served at the office, January through August",
@@ -89,7 +85,7 @@ p2 <- ggplot(tea_pref, aes(x = month, y = cups, color = tea, group = tea)) +
     color    = "Tea",
     caption  = "Source: The break room sign-in sheet."
   ) +
-  theme_stern()
+  stern::theme_stern()
 
 save_test(p2, "02_categorical_lines")
 
@@ -123,7 +119,7 @@ reading_data <- tidyr::expand_grid(
 
 p3 <- ggplot(reading_data, aes(x = shelf, y = checkouts, fill = format)) +
   geom_col(width = 0.65) +
-  scale_fill_stern_cat() +
+  stern::scale_fill_stern_cat() +
   labs(
     title    = "Library checkouts by section and format",
     subtitle = "Spring quarter, neighborhood branch",
@@ -132,13 +128,12 @@ p3 <- ggplot(reading_data, aes(x = shelf, y = checkouts, fill = format)) +
     fill     = "Format",
     caption  = "Source: Imaginary library system."
   ) +
-  theme_stern()
+  stern::theme_stern()
 
 save_test(p3, "03_stacked_bars")
 
 # ---- 4. Sequential continuous heatmap ------------------------------------
 
-# A grid of made-up "cookie freshness scores" by day and bakery
 heatmap_data <- expand.grid(
   day = factor(c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
                levels = c("Mon","Tue","Wed","Thu","Fri","Sat","Sun")),
@@ -150,10 +145,10 @@ set.seed(42)
 heatmap_data$score <- round(runif(nrow(heatmap_data), 30, 95))
 
 p4 <- ggplot(heatmap_data, aes(x = day, y = bakery, fill = score)) +
-  geom_tile(color = stern_bg_primary, linewidth = 0.5) +
-  geom_text(aes(label = score, color = stern_text_on_seq(score)),
+  geom_tile(color = stern::stern_bg_primary, linewidth = 0.5) +
+  geom_text(aes(label = score, color = stern::stern_text_on_seq(score)),
             family = "stern_sans", size = 3) +
-  scale_fill_stern_seq(name = "Freshness") +
+  stern::scale_fill_stern_seq(name = "Freshness") +
   scale_color_identity() +
   coord_equal() +
   labs(
@@ -163,20 +158,21 @@ p4 <- ggplot(heatmap_data, aes(x = day, y = bakery, fill = score)) +
     y        = NULL,
     caption  = "Source: A very serious cookie tasting club."
   ) +
-  theme_stern() +
+  stern::theme_stern() +
   theme(panel.grid = element_blank())
 
 save_test(p4, "04_sequential_heatmap", width = 9, height = 5)
 
 # ---- 5. Sequential discrete (binned quintiles) ---------------------------
 
+set.seed(11)
 quintile_data <- tibble::tibble(
   neighborhood = paste("Block", LETTERS[1:15]),
   bird_count = sample(20:200, 15, replace = TRUE)
 ) |>
   dplyr::mutate(
     quintile = factor(
-      ntile(bird_count, 5),
+      dplyr::ntile(bird_count, 5),
       levels = 1:5,
       labels = c("Lowest", "Low", "Mid", "High", "Highest")
     )
@@ -186,7 +182,7 @@ p5 <- ggplot(quintile_data,
              aes(x = bird_count, y = reorder(neighborhood, bird_count),
                  fill = quintile)) +
   geom_col(width = 0.7) +
-  scale_fill_stern_seq_d(name = "Quintile") +
+  stern::scale_fill_stern_seq_d(name = "Quintile") +
   labs(
     title    = "Backyard bird counts by neighborhood block",
     subtitle = "Citizen science data, May reporting period",
@@ -194,7 +190,7 @@ p5 <- ggplot(quintile_data,
     y        = NULL,
     caption  = "Source: Volunteers with binoculars and patience."
   ) +
-  theme_stern_vertical()
+  stern::theme_stern_vertical()
 
 save_test(p5, "05_sequential_discrete_quintiles", width = 8, height = 6)
 
@@ -212,12 +208,12 @@ diverge_data <- tibble::tibble(
 
 p6 <- ggplot(diverge_data, aes(x = pct_change, y = city, fill = pct_change)) +
   geom_col(width = 0.75) +
-  geom_vline(xintercept = 0, color = stern_border, linewidth = 0.4) +
+  geom_vline(xintercept = 0, color = stern::stern_border, linewidth = 0.4) +
   geom_text(aes(label = paste0(ifelse(pct_change > 0, "+", ""), pct_change, "%"),
                 hjust = ifelse(pct_change > 0, -0.2, 1.2)),
             family = "stern_sans", size = 3,
-            color = stern_text_body) +
-  scale_fill_stern_div(midpoint = 0) +
+            color = stern::stern_text_body) +
+  stern::scale_fill_stern_div(midpoint = 0) +
   scale_x_continuous(labels = function(x) paste0(x, "%"),
                      expand = expansion(mult = c(0.15, 0.15))) +
   labs(
@@ -227,7 +223,7 @@ p6 <- ggplot(diverge_data, aes(x = pct_change, y = city, fill = pct_change)) +
     y        = NULL,
     caption  = "Source: Regional market collective."
   ) +
-  theme_stern() +
+  stern::theme_stern() +
   theme(legend.position = "none",
         panel.grid.major.y = element_blank())
 
@@ -253,7 +249,7 @@ facet_data <- expand.grid(
 
 p7 <- ggplot(facet_data, aes(x = week, y = yield, fill = garden)) +
   geom_col(width = 0.7) +
-  scale_fill_stern_cat() +
+  stern::scale_fill_stern_cat() +
   facet_wrap(~ garden, ncol = 2) +
   labs(
     title    = "Weekly garden yield by crop",
@@ -262,14 +258,13 @@ p7 <- ggplot(facet_data, aes(x = week, y = yield, fill = garden)) +
     y        = "Pounds",
     caption  = "Source: A spreadsheet kept by a very dedicated retiree."
   ) +
-  theme_stern() +
+  stern::theme_stern() +
   theme(legend.position = "none")
 
 save_test(p7, "07_facets", width = 9, height = 6)
 
 # ---- 8. sf-based choropleth ----------------------------------------------
 
-# Build a fake set of polygons (5x5 grid of squares)
 grid_sf <- sf::st_make_grid(
   sf::st_as_sfc(sf::st_bbox(c(xmin = 0, ymin = 0, xmax = 5, ymax = 5))),
   cellsize = 1
@@ -287,21 +282,19 @@ grid_sf <- sf::st_make_grid(
   )
 
 p8 <- ggplot(grid_sf) +
-  geom_sf(aes(fill = bee_score), color = stern_bg_primary, linewidth = 0.5) +
-  scale_fill_stern_seq(name = "Bee score") +
+  geom_sf(aes(fill = bee_score), color = stern::stern_bg_primary, linewidth = 0.5) +
+  stern::scale_fill_stern_seq(name = "Bee score") +
   labs(
     title    = "Pollinator activity by garden parcel",
     subtitle = "Bees observed per 10-minute survey window",
     caption  = "Source: A volunteer with a stopwatch and a notebook."
   ) +
-  theme_stern_map()
+  stern::theme_stern_map()
 
 save_test(p8, "08_choropleth_sf", width = 7, height = 6)
 
 # ---- 9. Mustard-highlight chart ------------------------------------------
 
-# Demonstrates the "mustard as focal-point" pattern: olive bars,
-# one mustard bar to highlight the period of interest.
 highlight_data <- tibble::tibble(
   quarter = factor(
     c("Q1 24", "Q2 24", "Q3 24", "Q4 24", "Q1 25", "Q2 25",
@@ -316,13 +309,13 @@ highlight_data <- tibble::tibble(
 p9 <- ggplot(highlight_data, aes(x = quarter, y = value, fill = highlight)) +
   geom_col(width = 0.7) +
   scale_fill_manual(
-    values = c(normal = stern_palette[["olive"]],
-               focus  = stern_palette[["mustard"]])
+    values = c(normal = stern::stern_palette[["olive"]],
+               focus  = stern::stern_palette[["mustard"]])
   ) +
   geom_text(data = subset(highlight_data, highlight == "focus"),
             aes(label = value), vjust = -0.6,
             family = "stern_sans", size = 3.4,
-            color = stern_text_primary) +
+            color = stern::stern_text_primary) +
   labs(
     title    = "Pumpkin pie sales by quarter",
     subtitle = "Q1 26 highlighted because, well, look at it",
@@ -330,7 +323,7 @@ p9 <- ggplot(highlight_data, aes(x = quarter, y = value, fill = highlight)) +
     y        = "Pies sold",
     caption  = "Source: The bakery's POS system, which is extremely judgmental."
   ) +
-  theme_stern() +
+  stern::theme_stern() +
   theme(legend.position = "none")
 
 save_test(p9, "09_mustard_highlight")
@@ -339,5 +332,3 @@ save_test(p9, "09_mustard_highlight")
 
 message("\nAll done. Use the back/forward arrows in the RStudio plot pane ",
         "to flip through all 9 charts.")
-message("If anything looks off (font rendering, color too dark/light, ",
-        "spacing weird), let me know which chart and we'll tune it.")

@@ -1,7 +1,8 @@
 # ============================================================================
 # test-stern-shiny.R
 # ----------------------------------------------------------------------------
-# A small Shiny app that exercises every component styled by stern-shiny.R.
+# A small Shiny app that exercises every component styled by the stern
+# Shiny module.
 #
 # Tests:
 #   - page_sidebar layout
@@ -9,16 +10,17 @@
 #     checkboxGroupInput, radioButtons)
 #   - cards with headers, bodies, footers
 #   - bslib::value_box() with the design system's left-border accent
-#   - stern_stat_callout() — the standalone version
+#   - stern_stat_callout() -- the standalone version
 #   - tabs (navset_tab)
 #   - DT data tables
 #   - highcharter charts (column, line, scatter)
 #   - buttons (primary, secondary, action)
 #
 # Run with:
-#   shiny::runApp("test-stern-shiny.R")
+#   library(stern)
+#   stern_test_shiny()
 #
-# Sample data is intentionally silly — books, snacks, weather observations.
+# Sample data is intentionally silly -- books, snacks, weather observations.
 # ============================================================================
 
 library(shiny)
@@ -28,11 +30,7 @@ library(DT)
 library(highcharter)
 library(dplyr)
 library(tibble)
-
-# Source the theme files
-source("stern-theme.R")
-source("stern-shiny.R")
-source("stern-highcharter.R")
+library(stern)
 
 # ---- Sample data ----------------------------------------------------------
 
@@ -67,7 +65,7 @@ bakery_scores <- tibble(
 # ---- UI -------------------------------------------------------------------
 
 ui <- stern_app_shell(
-  title = "Stern theme — component test",
+  title = "Stern theme -- component test",
   # fillable = FALSE so the main content uses normal block flow.
   # In fillable mode, htmlwidget heights inside nested cards/tabs collapse to 0.
   fillable = FALSE,
@@ -122,7 +120,7 @@ ui <- stern_app_shell(
     style = "margin-bottom: 8px;",
     h2("Library checkouts dashboard",
        style = "margin-bottom: 2px;"),
-    p("Spring 2026 reporting period · Demo data for theme testing.",
+    p("Spring 2026 reporting period - Demo data for theme testing.",
       style = paste0("font-family: 'Source Serif 4', serif; ",
                      "color: ", stern_text_body, "; font-size: 0.92rem; ",
                      "margin-bottom: 16px;"))
@@ -135,7 +133,7 @@ ui <- stern_app_shell(
     stern_stat_callout(
       label = "Total checkouts",
       value = "2,408",
-      context = "Up from 2,141 in 2025",
+      context = "Up from 2,141 in spring 2025",
       accent = "olive"
     ),
     stern_stat_callout(
@@ -171,6 +169,13 @@ ui <- stern_app_shell(
         width = 1/2,
         gap = "16px",
 
+        # NOTE: We wrap each highchartOutput in a plain block-level <div>
+        # rather than putting it directly inside card_body(). bslib's
+        # card_body uses .html-fill-container (display:flex), and in the
+        # RStudio Viewer pane the chart's parent reports offsetWidth: 0
+        # at the moment Highcharts initializes -- so Highcharts gives up
+        # and the card stays empty. A plain block div with explicit
+        # width:100%; height:320px gives Highcharts a guaranteed canvas.
         card(
           full_screen = FALSE,
           card_header("Tea consumption by variety"),
@@ -230,18 +235,22 @@ ui <- stern_app_shell(
             tags$code("stern_bs_theme()"), " plus the layered CSS rules in ",
             tags$code("stern-shiny.R"), "."),
           p(style = "font-family: 'Source Serif 4', serif; line-height: 1.65;",
-            "If anything looks off lmk"),
+            "If anything looks off -- fonts not loading, colors not matching, ",
+            "spacing weird -- note which component and we'll tune the rules. ",
+            "Common issues to look for: rounded corners showing through, ",
+            "white text on colored fills, borders missing or too heavy, ",
+            "form inputs reverting to default Bootstrap styling."),
           h4("Component checklist"),
           tags$ul(
             style = "font-family: 'Source Serif 4', serif; line-height: 1.7;",
-            tags$li("Sidebar — secondary cream background, square corners"),
-            tags$li("Form inputs — uppercase labels, white input backgrounds, olive focus"),
-            tags$li("Buttons — primary olive, secondary outlined"),
-            tags$li("Stat callouts — cream with colored left borders"),
-            tags$li("Tabs — underline active state in olive, no pills"),
-            tags$li("Cards — square corners, secondary cream headers"),
-            tags$li("DT table — serif body, sans uppercase headers, olive pagination"),
-            tags$li("Highcharter — olive/navy/mustard series, cream background")
+            tags$li("Sidebar -- secondary cream background, square corners"),
+            tags$li("Form inputs -- uppercase labels, white input backgrounds, olive focus"),
+            tags$li("Buttons -- primary olive, secondary outlined"),
+            tags$li("Stat callouts -- cream with colored left borders"),
+            tags$li("Tabs -- underline active state in olive, no pills"),
+            tags$li("Cards -- square corners, secondary cream headers"),
+            tags$li("DT table -- serif body, sans uppercase headers, olive pagination"),
+            tags$li("Highcharter -- olive/navy/mustard series, cream background")
           )
         )
       )
@@ -253,7 +262,7 @@ ui <- stern_app_shell(
 
 server <- function(input, output, session) {
 
-  # Tea chart — categorical line by tea variety
+  # Tea chart -- categorical line by tea variety
   output$tea_chart <- renderHighchart({
     req(input$tea_choice)
     selected_col <- switch(input$tea_choice,
@@ -278,7 +287,7 @@ server <- function(input, output, session) {
       hc_add_theme(hc_theme_stern())
   })
 
-  # Bakery chart — bar with mustard highlighting the best
+  # Bakery chart -- bar with mustard highlighting the best
   output$bakery_chart <- renderHighchart({
     sorted <- bakery_scores |> arrange(desc(score))
     best_idx <- which.max(sorted$score) - 1  # 0-indexed for Highcharts
@@ -301,7 +310,7 @@ server <- function(input, output, session) {
       hc_add_theme(hc_theme_stern())
   })
 
-  # Trend chart — multi-series line
+  # Trend chart -- multi-series line
   output$trend_chart <- renderHighchart({
     highchart() |>
       hc_chart(type = "line") |>
