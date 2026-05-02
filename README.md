@@ -109,31 +109,7 @@ stern_save(p, "report.png")                       # 1600 x 1000 cream PNG
 
 ```
 
-## Design Specifics 
-
-### Color system
-
-In depth descriptions of each color scale, and different options for each that may be useful. 
-
-- **Categorical Scale** — `scale_color_stern_cat()` / `scale_fill_stern_cat()`. Six earthy hues in use order: olive, navy, mustard, rust, walnut, sage. Position 1 is your default first category. Position 3 (mustard) is also the canonical "highlight the focal point" color when used outside the categorical scale.
-- **Sequential Scale** — `scale_color_stern_seq()` / `scale_fill_stern_seq()`. Single-hue olive ramp, low to high. Discrete-binned variant: `scale_*_stern_seq_d()`. Use `reverse = TRUE` to flip direction.
-- **Diverging Scale** — `scale_color_stern_div()` / `scale_fill_stern_div()`. Olive to navy with a warm cream midpoint. Pass `midpoint =` to set where neutral falls in your data. Pass `reverse = TRUE` when "up" means "bad" for the metric (so navy reads as bad).
-
-### Token reference
-
-```r
-stern_palette       # named vector: olive, navy, mustard, rust, walnut, sage
-stern_seq           # 5 colors: sequential olive ramp
-stern_div           # 7 colors: diverging olive to navy
-stern_bg_primary    # "#FBF8F1" — page background
-stern_bg_secondary  # "#F2EDDF" — panels
-stern_text_primary  # "#2B2A1F"
-stern_text_body     # "#4A4632"
-stern_text_muted    # "#6E6A55"
-stern_border        # "#C9C0A4"
-```
-
-### Fonts
+## Fonts
 
 This theme uses Google Fonts (auto-loaded on `stern_setup_fonts()` via `showtext`):
 
