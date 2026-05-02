@@ -1,39 +1,48 @@
 # stern
 
-An editorial design system for civic-data visualization in R — ggplot2 themes, color scales, Shiny components, and a Highcharter theme, all in a coordinated vintage editorial palette.
+A design system for data visualization in R. The system was designed to be accessible to casual R users, allowing for easier collaboration and consistency on group projects.  
 
 ## Installation
+
+To access the package input the following code in the R-Studio console window:
 
 ```r
 # install.packages("remotes")
 remotes::install_github("EmilyRStern/stern")
 ```
 
-To pin to a specific release:
+This will install the package. After installation, it can be called with `library(stern)`.
+
+To demo the styling, run the following in your console: 
 
 ```r
-remotes::install_github("EmilyRStern/stern@v0.1.0")
+# Static plots
+stern::stern_test()
+
+# Shiny app 
+stern::stern_test_shiny()
 ```
 
-## What's in here
+Use the back/forward arrows in the RStudio plot pane to flip through the static charts. Shiny will open in its own window. 
 
-The package is split into modules so you only load what you need:
+## Quick start
 
-- **ggplot2 theme** — `theme_stern()`, `theme_stern_vertical()`, `theme_stern_map()`, the `scale_color_stern_*` / `scale_fill_stern_*` family, `stern_text_on_seq()` / `stern_text_on_div()`, and `stern_save()` for streamlined exports.
-- **Shiny / bslib** (optional) — `stern_bs_theme()`, `stern_app_shell()`, `stern_stat_callout()`, `stern_value_box_palette()`. Requires `bslib`, `shiny`, `htmltools`.
-- **Highcharter** (optional) — `hc_theme_stern()` plus the `hc_stern_*` palette helpers and color-stop helpers for `hc_colorAxis()`. Requires `highcharter`.
+Quick start sections are blocks to be pasted into an R script, to show how to apply the themes to your own outputs. 
 
-The core ggplot module only needs `ggplot2` and `scales`. The Shiny and Highcharter modules are listed as Suggests so you don't have to install everything just to use the static themes.
+## Quick start — ggplot
 
-## Quick start — static ggplot
+After installing the library, paste the below r code into a script file to create a static plot.
 
 ```r
+## Loading block. Add in relevant R libraries and datasets at top of script. 
 library(ggplot2)
 library(stern)
 
-stern_setup_fonts()           # call once per session
+stern_setup_fonts()           # Need to call once per session before using theme
 
-ggplot(data, aes(x, y, color = group)) +
+## Example plot using stern theme where we call the categorical color scale with `scale_color_stern_cat()`, and apply the overall plot theme (fonts, backgrounds) with `theme_stern()`
+
+p <- ggplot(data, aes(x, y, color = group)) +
   geom_line() +
   scale_color_stern_cat() +
   labs(
@@ -43,6 +52,8 @@ ggplot(data, aes(x, y, color = group)) +
   ) +
   theme_stern()
 ```
+
+Below are starter blocks for shiny and highcharts. Used for interactive products like dashboards and html charts.
 
 ## Quick start — Shiny
 
@@ -82,58 +93,33 @@ highchart() |>
 
 ## Saving plots
 
-`stern_save()` is a streamlined wrapper around `ggsave()`. Pixel dimensions, named size presets, automatic `showtext` DPI sync, and a sensible cream-background default:
+`stern_save()` is a wrapper around `ggsave()`, with sizing conventions optimized to suit different deliverable types. In this example we create and save a chart called `p`
 
 ```r
 p <- ggplot(...) + theme_stern()
 
+## All saving options listed below. `stern_save` on it's own should suffice for most uses. 
+
 stern_save(p, "report.png")                       # 1600 x 1000 cream PNG
-stern_save(p, "social.png",  size = "social")     # 1200 x 630 (Twitter card)
-stern_save(p, "square.png",  size = "square")     # 1200 x 1200 (Instagram)
-stern_save(p, "custom.png",  width = 900, height = 600)
-stern_save(p, "vector.pdf")                       # PDF auto-detected
-stern_save(p, "white.png",   bg = "white")        # override background
+#stern_save(p, "social.png",  size = "social")     # 1200 x 630 (Twitter card)
+#stern_save(p, "square.png",  size = "square")     # 1200 x 1200 (Instagram)
+#stern_save(p, "custom.png",  width = 900, height = 600) # customized shape
+#stern_save(p, "vector.pdf")                       # PDF auto-detected
+#stern_save(p, "white.png",   bg = "white")        # override background
+
 ```
 
-The format is inferred from the extension. The `showtext` DPI is matched to the export DPI under the hood, so your text doesn't come out tiny when saving at print resolution.
+## Design Specifics 
 
 ## Color system
 
-Three scales, each with its own job:
+In depth descriptions of each color scale, and different options for each that may be useful. 
 
-- **Categorical** — `scale_color_stern_cat()` / `scale_fill_stern_cat()`. Six earthy hues in use order: olive, navy, mustard, rust, walnut, sage. Position 1 is your default first category. Position 3 (mustard) is also the canonical "highlight the focal point" color when used outside the categorical scale.
-- **Sequential** — `scale_color_stern_seq()` / `scale_fill_stern_seq()`. Single-hue olive ramp, low to high. Discrete-binned variant: `scale_*_stern_seq_d()`. Use `reverse = TRUE` to flip direction.
-- **Diverging** — `scale_color_stern_div()` / `scale_fill_stern_div()`. Olive to navy with a warm cream midpoint. Pass `midpoint =` to set where neutral falls in your data. Pass `reverse = TRUE` when "up" means "bad" for the metric (so navy reads as bad).
-
-## Theme variants
-
-- **`theme_stern()`** — default. Horizontal gridlines, white plot panel, cream page, bottom-centered legend.
-- **`theme_stern_vertical()`** — vertical gridlines instead. Use for horizontal bar charts and dot plots.
-- **`theme_stern_map()`** — no gridlines, no panel border, no axis ticks. Use for choropleths and spatial visualizations.
-
-All three accept a `legend =` argument: `"bottom"` (default), `"top"`, `"right"`, `"left"`, `"none"`, or a numeric `c(x, y)` for an inset legend.
-
-## Text-on-fill legibility
-
-When labels sit on top of a sequential or diverging fill, dark text gets lost on the dark end of the scale. Two helpers handle the contrast flip automatically:
-
-- **`stern_text_on_seq(values)`** — for sequential fills. Returns dark text for light cells, cream text for dark cells.
-- **`stern_text_on_div(values, midpoint = 0)`** — for diverging fills. Returns cream text near both extremes, dark text near the neutral middle.
-
-Pair either helper with `scale_color_identity()` so ggplot uses the colors directly:
-
-```r
-ggplot(data, aes(x, y, fill = score)) +
-  geom_tile() +
-  geom_text(aes(label = score, color = stern_text_on_seq(score)),
-            family = "stern_sans") +
-  scale_fill_stern_seq() +
-  scale_color_identity()
-```
+- **Categorical Scale** — `scale_color_stern_cat()` / `scale_fill_stern_cat()`. Six earthy hues in use order: olive, navy, mustard, rust, walnut, sage. Position 1 is your default first category. Position 3 (mustard) is also the canonical "highlight the focal point" color when used outside the categorical scale.
+- **Sequential Scale** — `scale_color_stern_seq()` / `scale_fill_stern_seq()`. Single-hue olive ramp, low to high. Discrete-binned variant: `scale_*_stern_seq_d()`. Use `reverse = TRUE` to flip direction.
+- **Diverging Scale** — `scale_color_stern_div()` / `scale_fill_stern_div()`. Olive to navy with a warm cream midpoint. Pass `midpoint =` to set where neutral falls in your data. Pass `reverse = TRUE` when "up" means "bad" for the metric (so navy reads as bad).
 
 ## Token reference
-
-All color tokens are exported and documented (`?stern_palette`, etc.):
 
 ```r
 stern_palette       # named vector: olive, navy, mustard, rust, walnut, sage
@@ -147,18 +133,6 @@ stern_text_muted    # "#6E6A55"
 stern_border        # "#C9C0A4"
 ```
 
-## Running the smoke tests
-
-The repo includes two scripts that exercise the package end-to-end. After installing and loading:
-
-```r
-library(stern)
-source("test-stern-theme.R")    # renders 9 chart types in the plot pane
-source("test-stern-shiny.R")    # launches a Shiny smoke-test app
-```
-
-Use the back/forward arrows in the RStudio plot pane to flip through the static charts.
-
 ## Fonts
 
 This theme uses Google Fonts (auto-loaded on `stern_setup_fonts()` via `showtext`):
@@ -166,16 +140,12 @@ This theme uses Google Fonts (auto-loaded on `stern_setup_fonts()` via `showtext
 - **Source Serif 4** for headlines, subtitles, body, and legend text
 - **Source Sans 3** for axis labels and structural UI
 
-By default, `face = "bold"` renders at weight 600 (semibold) for an editorial half-bold feel. Override with `stern_setup_fonts(bold_weight = 700)` for full bold or `bold_weight = 500` for medium.
+By default, `face = "bold"` renders at weight 600 (semibold). Override with `stern_setup_fonts(bold_weight = 700)` for full bold or `bold_weight = 500` for medium.
 
 ## Dependencies
 
-**Required:** `ggplot2`, `scales`.
-
-**Suggested:** `showtext`, `sysfonts` (for Google Font support); `bslib`, `shiny`, `htmltools`, `DT` (for the Shiny module); `highcharter` (for interactive charts).
-
-The Suggests packages are checked at function-call time — install only what you actually use.
+**Required:** `ggplot2`, `scales`, `showtext`, `sysfonts` (for Google Font support); `bslib`, `shiny`, `htmltools`, `DT` (for the Shiny module); `highcharter` (for interactive charts).
 
 ## License
 
-MIT © Emily Stern
+MIT © Emily Stern, 2026
