@@ -29,7 +29,7 @@ Use the back/forward arrows in the RStudio plot pane to flip through the static 
 
 Quick start sections are blocks to be pasted into an R script, to show how to apply the themes to your own outputs. 
 
-## Quick start — ggplot
+### Quick start — ggplot
 
 After installing the library, paste the below r code into a script file to create a static plot.
 
@@ -55,7 +55,7 @@ p <- ggplot(data, aes(x, y, color = group)) +
 
 Below are starter blocks for shiny and highcharts. Used for interactive products like dashboards and html charts.
 
-## Quick start — Shiny
+### Quick start — Shiny
 
 ```r
 library(shiny)
@@ -77,7 +77,7 @@ server <- function(input, output) { ... }
 shinyApp(ui, server)
 ```
 
-## Quick start — Highcharter
+### Quick start — Highcharter
 
 ```r
 library(highcharter)
@@ -111,7 +111,7 @@ stern_save(p, "report.png")                       # 1600 x 1000 cream PNG
 
 ## Design Specifics 
 
-## Color system
+### Color system
 
 In depth descriptions of each color scale, and different options for each that may be useful. 
 
@@ -119,7 +119,7 @@ In depth descriptions of each color scale, and different options for each that m
 - **Sequential Scale** — `scale_color_stern_seq()` / `scale_fill_stern_seq()`. Single-hue olive ramp, low to high. Discrete-binned variant: `scale_*_stern_seq_d()`. Use `reverse = TRUE` to flip direction.
 - **Diverging Scale** — `scale_color_stern_div()` / `scale_fill_stern_div()`. Olive to navy with a warm cream midpoint. Pass `midpoint =` to set where neutral falls in your data. Pass `reverse = TRUE` when "up" means "bad" for the metric (so navy reads as bad).
 
-## Token reference
+### Token reference
 
 ```r
 stern_palette       # named vector: olive, navy, mustard, rust, walnut, sage
@@ -133,7 +133,7 @@ stern_text_muted    # "#6E6A55"
 stern_border        # "#C9C0A4"
 ```
 
-## Fonts
+### Fonts
 
 This theme uses Google Fonts (auto-loaded on `stern_setup_fonts()` via `showtext`):
 
